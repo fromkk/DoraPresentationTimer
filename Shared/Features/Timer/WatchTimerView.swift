@@ -110,7 +110,7 @@ struct WatchTimerView: View {
 
             Button {
                 if viewModel.isTimerRunning {
-                    viewModel.stopTimer()
+                    viewModel.pauseTimer()
                 } else {
                     viewModel.startTimer()
                 }

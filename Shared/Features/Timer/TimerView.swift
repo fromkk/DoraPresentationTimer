@@ -105,8 +105,6 @@ private extension TimerView {
                 Text(viewModel.remainingSeconds.formattedAsMMSS)
                     .font(.system(size: fontSize, weight: .regular))
                     .monospacedDigit() // 数字だけ等幅にする
-                    // iOSDCモードがONの時は残り時間はほぼ表示しない
-                    .opacity(settingsStore.settings.isIOSDCModeEnabled ? 0.01 : 1.0)
                     .foregroundStyle(
                         // 残り10秒で赤くする
                         viewModel.remainingSeconds <= 10 && viewModel.isTimerRunning
@@ -140,7 +138,7 @@ private extension TimerView {
         
         return Button {
             if viewModel.isTimerRunning {
-                viewModel.stopTimer()
+                viewModel.pauseTimer()
             } else {
                 viewModel.startTimer()
             }

@@ -19,6 +19,7 @@ final class TimerViewModel: ObservableObject {
     
     private let ticker: TimerTicking
     private let soundPlayer: SoundPlaying
+    private let feedbackPerformer: FeedbackPerforming
     private let settingsStore: SettingsStore
     private let notificationScheduler: NotificationScheduler
     
@@ -33,11 +34,13 @@ final class TimerViewModel: ObservableObject {
         settingsStore: SettingsStore,
         ticker: TimerTicking = TimerEngine(),
         soundPlayer: SoundPlaying = SoundPlayer(),
+        feedbackPerformer: FeedbackPerforming = FeedbackPerformer(),
         notificationScheduler: NotificationScheduler = NotificationScheduler()
     ) {
         self.settingsStore = settingsStore
         self.ticker = ticker
         self.soundPlayer = soundPlayer
+        self.feedbackPerformer = feedbackPerformer
         self.notificationScheduler = notificationScheduler
         
         applyDurationFromSettings(settingsStore.settings)
@@ -87,6 +90,7 @@ final class TimerViewModel: ObservableObject {
         timerEndDate = Date().addingTimeInterval(TimeInterval(remainingSeconds))
 
         isTimerRunning = true
+        feedbackPerformer.performButtonFeedback()
         // タイマー中はスリープさせない
         setIdleTimerDisabled(true)
         notificationScheduler.schedule(
@@ -104,8 +108,15 @@ final class TimerViewModel: ObservableObject {
                 self.handleTick()
             }
     }
+
+    func pauseTimer() {
+        guard isTimerRunning else { return }
+
+        feedbackPerformer.performButtonFeedback()
+        stopTimer()
+    }
     
-    func stopTimer() {
+    private func stopTimer() {
         isTimerRunning = false
         setIdleTimerDisabled(false)
         
