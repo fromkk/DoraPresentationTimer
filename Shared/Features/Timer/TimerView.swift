@@ -138,7 +138,7 @@ private extension TimerView {
         
         return Button {
             if viewModel.isTimerRunning {
-                viewModel.stopTimer()
+                viewModel.pauseTimer()
             } else {
                 viewModel.startTimer()
             }

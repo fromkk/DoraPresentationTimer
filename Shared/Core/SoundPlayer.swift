@@ -6,12 +6,18 @@
 //
 
 import AVFoundation
-#if os(watchOS)
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
 import WatchKit
 #endif
 
 protocol SoundPlaying {
     func play(_ type: SoundType)
+}
+
+protocol FeedbackPerforming {
+    func performButtonFeedback()
 }
 
 enum SoundType: String, Codable, CaseIterable {
@@ -63,5 +69,17 @@ final class SoundPlayer: SoundPlaying {
             print("error")
             #endif
         }
+    }
+}
+
+final class FeedbackPerformer: FeedbackPerforming {
+    func performButtonFeedback() {
+        #if os(iOS)
+        let generator = UISelectionFeedbackGenerator()
+        generator.prepare()
+        generator.selectionChanged()
+        #elseif os(watchOS)
+        WKInterfaceDevice.current().play(.click)
+        #endif
     }
 }
