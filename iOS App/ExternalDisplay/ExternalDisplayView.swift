@@ -7,8 +7,9 @@ import SwiftUI
 
 /// 外部ディスプレイに出す表示専用の画面。
 ///
-/// - iOSDCモードON: マーキー警告のみを出す。警告が出ていない間は背景だけ
-/// - iOSDCモードOFF: 残り時間を大きく出す
+/// 背景の上に、以下を重ねて出す。
+/// - マーキー警告（iOSDCモードONかつ警告中のみ）
+/// - 残り時間（「カウントダウンを表示」がONのときのみ）
 ///
 /// 文字色はどちらもペンライトカラー（`MarqueeWarningText` と同じ）。
 struct ExternalDisplayView: View {
@@ -34,10 +35,12 @@ struct ExternalDisplayView: View {
             ZStack {
                 backgroundColor
 
+                if settingsStore.settings.isExternalDisplayTimerVisible {
+                    remainingTime(in: geo.size)
+                }
+
                 if settingsStore.settings.isIOSDCModeEnabled {
                     marquee(in: geo.size)
-                } else {
-                    remainingTime(in: geo.size)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

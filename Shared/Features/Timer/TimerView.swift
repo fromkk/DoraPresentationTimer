@@ -16,6 +16,7 @@ struct TimerView: View {
     @State private var selectedSecond: Int = 0
     
     @State private var isPickerPresented = false
+    @State private var isExternalDisplaySettingsPresented = false
     
     init(viewModel: TimerViewModel) {
         self.viewModel = viewModel
@@ -66,9 +67,13 @@ struct TimerView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if AppModel.shared.isExternalDisplayConnected {
-                        Label("timer.externalDisplayConnected", systemImage: "display")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        Button {
+                            isExternalDisplaySettingsPresented = true
+                        } label: {
+                            Label("timer.externalDisplayConnected", systemImage: "display")
+                                .font(.caption)
+                        }
+                        .accessibilityHint("accessibility.timer.externalDisplaySettingsHint")
                     }
                 }
 
@@ -81,6 +86,13 @@ struct TimerView: View {
                     .accessibilityLabel("settings.title")
                 }
             }
+        }
+        // NOTE: 同じViewに .sheet を2つ付けると片方が反応しなくなるので、
+        // 時間ピッカーとは別のView（NavigationStackの外側）に付ける
+        .sheet(isPresented: $isExternalDisplaySettingsPresented) {
+            ExternalDisplaySettingsView()
+                .presentationDetents([.fraction(0.35), .medium])
+                .presentationDragIndicator(.visible)
         }
         .onAppear {
             syncSelectedTimeFromViewModel()

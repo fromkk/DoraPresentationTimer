@@ -57,19 +57,6 @@ struct SettingsView: View {
         )
     }
 
-    private var externalDisplayBackgroundColorBinding: Binding<Color> {
-        Binding(
-            get: {
-                Color(hexString: settingsStore.settings.externalDisplayBackgroundColorHex)
-                    ?? Color(hexString: AppSettings.defaultExternalDisplayBackgroundColorHex)
-                    ?? .black
-            },
-            set: { newValue in
-                settingsStore.update { $0.externalDisplayBackgroundColorHex = newValue.hexString }
-            }
-        )
-    }
-
     private var penlightColorBinding: Binding<PenlightColor> {
         Binding(
             get: { settingsStore.settings.penlightColor },
@@ -119,12 +106,6 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-
-                ColorPicker(
-                    "settings.externalDisplayBackgroundColor",
-                    selection: externalDisplayBackgroundColorBinding,
-                    supportsOpacity: false
-                )
             }
 
             Section("section.language") {
