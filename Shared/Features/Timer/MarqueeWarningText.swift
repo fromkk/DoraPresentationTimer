@@ -44,6 +44,10 @@ struct MarqueeWarningText: View {
 
     let text: String
     let duration: Double
+    /// 文字サイズ。外部ディスプレイでは画面に合わせて大きくする
+    var fontSize: CGFloat = 30
+    /// 行の高さ。外部ディスプレイでは fontSize に合わせて大きくする
+    var height: CGFloat = 44
 
     var body: some View {
         GeometryReader { geo in
@@ -51,11 +55,12 @@ struct MarqueeWarningText: View {
                 text: text,
                 duration: duration,
                 color: settingsStore.settings.penlightColor.color,
+                fontSize: fontSize,
                 containerWidth: geo.size.width
             )
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 44)
+        .frame(height: height)
         .clipped()
         .allowsHitTesting(false)
     }
@@ -65,6 +70,7 @@ private struct MarqueeWarningTextLine: View {
     let text: String
     let duration: Double
     let color: Color
+    let fontSize: CGFloat
     let containerWidth: CGFloat
 
     @State private var startDate = Date()
@@ -73,7 +79,7 @@ private struct MarqueeWarningTextLine: View {
     var body: some View {
         TimelineView(.animation) { timeline in
             Text(text)
-                .font(.custom("DotGothic16-Regular", size: 30))
+                .font(.custom("DotGothic16-Regular", size: fontSize))
                 .foregroundStyle(color)
                 .shadow(color: .black.opacity(0.3), radius: 2, x: 1, y: 1)
                 .lineLimit(1)

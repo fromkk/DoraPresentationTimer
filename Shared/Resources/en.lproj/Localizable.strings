@@ -11,6 +11,8 @@
 "settings.language" = "Language";
 "settings.iosdcMode" = "iOSDC Mode";
 "settings.penlightColor" = "Penlight Color";
+"settings.externalDisplayBackgroundColor" = "External Display Background";
+"timer.externalDisplayConnected" = "External Display Connected";
 "settings.reminder.secondsBeforeEnd" = "%d seconds before end";
 "settings.reminder.shortSecondsBeforeEnd" = "%ds";
 "settings.reminder.unset" = "Not Set";

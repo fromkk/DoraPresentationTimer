@@ -64,6 +64,14 @@ struct TimerView: View {
                 viewModel.setInitialTime(minutes: selectedMinute, seconds: selectedSecond)
             }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if AppModel.shared.isExternalDisplayConnected {
+                        Label("timer.externalDisplayConnected", systemImage: "display")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     NavigationLink {
                         SettingsView()
