@@ -11,6 +11,7 @@ import Observation
 import UIKit
 #endif
 
+@MainActor
 @Observable
 final class TimerViewModel {
     /// 残り秒
@@ -52,7 +53,10 @@ final class TimerViewModel {
     }
     
     deinit {
-        setIdleTimerDisabled(false)
+        // deinit は nonisolated なので MainActor のヘルパーは呼べない
+        #if os(iOS)
+        Task { @MainActor in UIApplication.shared.isIdleTimerDisabled = false }
+        #endif
     }
     
     func setInitialTime(minutes: Int, seconds: Int) {
@@ -99,8 +103,7 @@ final class TimerViewModel {
             shouldSchedule: { [weak self] in self?.isTimerRunning == true }
         )
         
-        // Timer.publish(on: .main) と同じく、残り時間の更新はメインスレッドで行う
-        tickTask = Task { @MainActor [weak self, ticker] in
+        tickTask = Task { [weak self, ticker] in
             for await _ in ticker.ticks() {
                 guard let self else { return }
                 // 残時間を更新
