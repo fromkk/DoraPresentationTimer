@@ -6,29 +6,29 @@
 //
 
 import Foundation
-import Combine
+import Observation
 #if os(iOS)
 import UIKit
 #endif
 
-final class TimerViewModel: ObservableObject {
+@Observable
+final class TimerViewModel {
     /// 残り秒
-    @Published private(set) var remainingSeconds: Int = 0
+    private(set) var remainingSeconds: Int = 0
     /// タイマーが稼働中か
-    @Published private(set) var isTimerRunning: Bool = false
+    private(set) var isTimerRunning: Bool = false
     
-    private let ticker: TimerTicking
-    private let soundPlayer: SoundPlaying
-    private let feedbackPerformer: FeedbackPerforming
-    private let settingsStore: SettingsStore
-    private let notificationScheduler: NotificationScheduler
+    @ObservationIgnored private let ticker: TimerTicking
+    @ObservationIgnored private let soundPlayer: SoundPlaying
+    @ObservationIgnored private let feedbackPerformer: FeedbackPerforming
+    @ObservationIgnored private let settingsStore: SettingsStore
+    @ObservationIgnored private let notificationScheduler: NotificationScheduler
     
-    private var cancellables = Set<AnyCancellable>()   // 常時購読（設定など）
-    private var tickCancellable: AnyCancellable?       // タイマー稼働中のみ
+    @ObservationIgnored private var tickTask: Task<Void, Never>?   // タイマー稼働中のみ
     
-    private var sessionDurationSeconds: Int = 0
-    private var sessionReminders: [ReminderRule] = []
-    private var timerEndDate: Date?
+    @ObservationIgnored private var sessionDurationSeconds: Int = 0
+    @ObservationIgnored private var sessionReminders: [ReminderRule] = []
+    @ObservationIgnored private var timerEndDate: Date?
     
     init(
         settingsStore: SettingsStore,
@@ -46,11 +46,9 @@ final class TimerViewModel: ObservableObject {
         applyDurationFromSettings(settingsStore.settings)
         
         // 設定変更を監視して、停止中なら反映
-        settingsStore.$settings
-            .sink { [weak self] settings in
-                self?.applyDurationFromSettings(settings)
-            }
-            .store(in: &cancellables)
+        settingsStore.onChange = { [weak self] settings in
+            self?.applyDurationFromSettings(settings)
+        }
     }
     
     deinit {
@@ -101,12 +99,14 @@ final class TimerViewModel: ObservableObject {
             shouldSchedule: { [weak self] in self?.isTimerRunning == true }
         )
         
-        tickCancellable = ticker.tick
-            .sink { [weak self] in
+        // Timer.publish(on: .main) と同じく、残り時間の更新はメインスレッドで行う
+        tickTask = Task { @MainActor [weak self, ticker] in
+            for await _ in ticker.ticks() {
                 guard let self else { return }
                 // 残時間を更新
                 self.handleTick()
             }
+        }
     }
 
     func pauseTimer() {
@@ -120,8 +120,8 @@ final class TimerViewModel: ObservableObject {
         isTimerRunning = false
         setIdleTimerDisabled(false)
         
-        tickCancellable?.cancel()
-        tickCancellable = nil
+        tickTask?.cancel()
+        tickTask = nil
         
         timerEndDate = nil
         sessionReminders = [] 

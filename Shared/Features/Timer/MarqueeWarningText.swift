@@ -40,7 +40,7 @@ enum MarqueeWarningMessage: Equatable, Identifiable {
 
 /// 右から左へ流れる警告テキスト
 struct MarqueeWarningText: View {
-    @EnvironmentObject private var settingsStore: SettingsStore
+    @Environment(SettingsStore.self) private var settingsStore
 
     let text: String
     let duration: Double

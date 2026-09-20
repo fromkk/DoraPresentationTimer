@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct DoraPresentationTimerApp: App {
-    @StateObject private var settingsStore = SettingsStore()
+    @State private var settingsStore = SettingsStore()
 
     var body: some Scene {
         WindowGroup {
             TimerView(viewModel: TimerViewModel(settingsStore: settingsStore))
-                .environmentObject(settingsStore)
+                .environment(settingsStore)
                 .environment(\.locale, Locale(identifier: settingsStore.settings.language.localeIdentifier))
                 .preferredColorScheme(settingsStore.settings.colorMode.colorScheme)
         }

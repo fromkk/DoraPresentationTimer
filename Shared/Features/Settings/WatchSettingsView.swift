@@ -22,7 +22,7 @@ private enum WatchEditTarget: Identifiable {
 }
 
 struct WatchSettingsView: View {
-    @EnvironmentObject private var settingsStore: SettingsStore
+    @Environment(SettingsStore.self) private var settingsStore
     @State private var editTarget: WatchEditTarget?
 
     private var languageBinding: Binding<AppLanguage> {
@@ -154,6 +154,6 @@ struct WatchSettingsView: View {
 #Preview {
     NavigationStack {
         WatchSettingsView()
-            .environmentObject(SettingsStore())
+            .environment(SettingsStore())
     }
 }
