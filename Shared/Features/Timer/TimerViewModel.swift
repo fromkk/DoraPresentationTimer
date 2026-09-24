@@ -52,6 +52,7 @@ final class TimerViewModel {
     }
     
     deinit {
+        tickTask?.cancel()
         setIdleTimerDisabled(false)
     }
     
