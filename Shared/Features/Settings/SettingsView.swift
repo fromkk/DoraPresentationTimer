@@ -20,7 +20,7 @@ private enum EditTarget: Identifiable {
 }
 
 struct SettingsView: View {
-    @EnvironmentObject var settingsStore: SettingsStore
+    @Environment(SettingsStore.self) var settingsStore
     @AppStorage("is_iosdc_mode_unlocked") private var isIOSDCModeUnlocked = false
     @State private var editTarget: EditTarget?
     @State private var secretTapCount = 0

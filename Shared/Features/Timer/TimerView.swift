@@ -9,8 +9,8 @@ import SwiftUI
 
 /// タイマー画面
 struct TimerView: View {
-    @EnvironmentObject private var settingsStore: SettingsStore
-    @ObservedObject private var viewModel: TimerViewModel
+    @Environment(SettingsStore.self) private var settingsStore
+    private let viewModel: TimerViewModel
     
     @State private var selectedMinute: Int = 0
     @State private var selectedSecond: Int = 0
@@ -193,14 +193,14 @@ struct TimerView_Previews: PreviewProvider {
         
         Group {
             TimerView(viewModel: TimerViewModel(settingsStore: settingsStore))
-                .environmentObject(settingsStore)
+                .environment(settingsStore)
             
             TimerView(viewModel: TimerViewModel(settingsStore: settingsStore))
-                .environmentObject(settingsStore)
+                .environment(settingsStore)
                 .previewInterfaceOrientation(.landscapeLeft)
 
             TimerView(viewModel: TimerViewModel(settingsStore: settingsStore))
-                .environmentObject(settingsStore)
+                .environment(settingsStore)
                 .preferredColorScheme(.dark)
         }
     }

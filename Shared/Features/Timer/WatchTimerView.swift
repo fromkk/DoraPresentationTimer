@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct WatchTimerView: View {
-    @EnvironmentObject private var settingsStore: SettingsStore
-    @ObservedObject private var viewModel: TimerViewModel
+    @Environment(SettingsStore.self) private var settingsStore
+    private let viewModel: TimerViewModel
 
     @State private var selectedMinute = 0
     @State private var selectedSecond = 0
@@ -147,5 +147,5 @@ struct WatchTimerView: View {
     let settingsStore = SettingsStore()
 
     WatchTimerView(viewModel: TimerViewModel(settingsStore: settingsStore))
-        .environmentObject(settingsStore)
+        .environment(settingsStore)
 }

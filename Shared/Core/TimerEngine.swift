@@ -5,22 +5,36 @@
 //  Created by saki iwamoto on 2026/01/23.
 //
 
-import Combine
 import Foundation
 
 protocol TimerTicking {
-    /// イベントが流れてくるPublisher
-    var tick: AnyPublisher<Void, Never> { get }
+    /// 一定間隔でイベントが流れるストリームを作る
+    func ticks() -> AsyncStream<Void>
 }
 
 struct TimerEngine: TimerTicking {
-    let tick: AnyPublisher<Void, Never>
+    private let interval: Duration
 
-    init(interval: TimeInterval = 1.0) {
-        // Timer.publishはConnectablePublisher（connectメソッドを呼ばれて初めてイベントを発生させる）
-        self.tick = Timer.publish(every: interval, on: .main, in: .common)
-            .autoconnect() // 普通のpublisherのような振る舞いをさせる
-            .map { _ in () }
-            .eraseToAnyPublisher()
+    init(interval: Duration = .seconds(1)) {
+        self.interval = interval
+    }
+
+    func ticks() -> AsyncStream<Void> {
+        AsyncStream { continuation in
+            let task = Task {
+                // 締切を絶対時刻で進める
+                var deadline = ContinuousClock.now
+                while !Task.isCancelled {
+                    deadline = deadline.advanced(by: interval)
+                    try? await Task.sleep(until: deadline, clock: .continuous)
+                    guard !Task.isCancelled else { break }
+
+                    continuation.yield(())
+                }
+                continuation.finish()
+            }
+
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 }

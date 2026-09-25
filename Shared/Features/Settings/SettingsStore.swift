@@ -6,13 +6,17 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
-final class SettingsStore: ObservableObject {
-    @Published private(set) var settings: AppSettings
+@Observable
+final class SettingsStore {
+    private(set) var settings: AppSettings
 
-    private let key = "app_settings_v1"
-    private let defaults: UserDefaults
+    /// 設定変更をモデル層へ伝えるフック。Viewは Observation で自動追従するので使わない。
+    @ObservationIgnored var onChange: ((AppSettings) -> Void)?
+
+    @ObservationIgnored private let key = "app_settings_v1"
+    @ObservationIgnored private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -25,6 +29,7 @@ final class SettingsStore: ObservableObject {
         new = normalized(new)
         settings = new
         save(new)
+        onChange?(new)
     }
 
     /// 設定値をアプリ内部で安全に扱える状態へ正規化する
