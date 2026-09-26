@@ -87,8 +87,6 @@ struct TimerView: View {
                 }
             }
         }
-        // NOTE: 同じViewに .sheet を2つ付けると片方が反応しなくなるので、
-        // 時間ピッカーとは別のView（NavigationStackの外側）に付ける
         .sheet(isPresented: $isExternalDisplaySettingsPresented) {
             ExternalDisplaySettingsView()
                 .presentationDetents([.fraction(0.35), .medium])
