@@ -27,8 +27,6 @@ struct ExternalDisplayView: View {
     private let marqueeTopInsetRatio: CGFloat = 0.05
     /// マーキーの行の高さ（文字サイズに対する倍率）。上下が欠けない程度に余裕を持たせる
     private let marqueeLineHeightRatio: CGFloat = 1.5
-    /// マーキーの流れる速さ（pt/秒）。画面幅が変わっても体感速度を揃える
-    private let marqueeSpeed: CGFloat = 220
 
     var body: some View {
         GeometryReader { geo in
@@ -65,7 +63,6 @@ struct ExternalDisplayView: View {
 
             MarqueeWarningText(
                 text: message.text,
-                duration: Double(size.width / marqueeSpeed),
                 fontSize: fontSize,
                 height: fontSize * marqueeLineHeightRatio
             )

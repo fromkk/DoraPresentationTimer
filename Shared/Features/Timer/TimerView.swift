@@ -37,7 +37,7 @@ struct TimerView: View {
                     remainingSeconds: viewModel.remainingSeconds,
                     isTimerRunning: viewModel.isTimerRunning
                 ) {
-                    MarqueeWarningText(text: message.text, duration: 5.0)
+                    MarqueeWarningText(text: message.text)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 16)
                         .zIndex(1)

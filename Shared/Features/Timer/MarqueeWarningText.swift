@@ -42,8 +42,11 @@ enum MarqueeWarningMessage: Equatable, Identifiable {
 struct MarqueeWarningText: View {
     @Environment(SettingsStore.self) private var settingsStore
 
+    /// 1周（右端から出て左端へ抜けきるまで）にかかる秒数。
+    static let defaultDuration: TimeInterval = 5.0
+
     let text: String
-    let duration: Double
+    var duration: TimeInterval = defaultDuration
     /// 文字サイズ。外部ディスプレイでは画面に合わせて大きくする
     var fontSize: CGFloat = 30
     /// 行の高さ。外部ディスプレイでは fontSize に合わせて大きくする
@@ -68,7 +71,7 @@ struct MarqueeWarningText: View {
 
 private struct MarqueeWarningTextLine: View {
     let text: String
-    let duration: Double
+    let duration: TimeInterval
     let color: Color
     let fontSize: CGFloat
     let containerWidth: CGFloat
@@ -106,13 +109,15 @@ private struct MarqueeWarningTextLine: View {
     }
 
     private func offset(at date: Date) -> CGFloat {
+        // 右端から出て、文字の末尾が左端へ抜けきるまでの距離
+        let travelDistance = containerWidth + textWidth
+
         guard containerWidth > 0, textWidth > 0, duration > 0 else {
             return containerWidth
         }
 
         let elapsed = date.timeIntervalSince(startDate)
         let progress = elapsed.truncatingRemainder(dividingBy: duration) / duration
-        let travelDistance = containerWidth + textWidth
 
         return containerWidth - travelDistance * progress
     }
