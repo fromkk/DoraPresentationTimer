@@ -22,7 +22,7 @@ final class ExternalDisplaySceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let model = AppModel.shared
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UIHostingController(
+        window.rootViewController = ExternalDisplayViewController(
             rootView: ExternalDisplayView(viewModel: model.timerViewModel)
                 .environment(model.settingsStore)
         )
